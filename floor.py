@@ -1,16 +1,12 @@
 
 import pygame
 from pygame.locals import *
-class Floor:
+
+from gameobject import GameObject
+
+
+class Floor(GameObject):
     def __init__(self, x: int, y: int, width: int, height: int, game):
+        super().__init__(x, y, width, height, game, "images/floor.png")
 
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.game = game
 
-        self.img = pygame.transform.scale(pygame.image.load("wall.png"), (self.width, self.height))
-
-    def draw(self):
-        self.game.screen.blit(self.img, (self.x - self.width/2, self.y - self.height/2))
