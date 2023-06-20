@@ -22,11 +22,35 @@ class Game:
 
         self.offsetX = self.offsetY = 0
 
-        self.player = Player(100, 100, 80, 80, self)
+        self.player = Player(400, 400, 80, 80, self)
+
+        self.tileSize = 100
+        self.level = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
+        ]
 
     def main(self):
         self.init_game()
         self.game_loop()
+
+    def create_level(self):
+        for y in range(len(self.level)):
+            for x in range(len(self.level[y])):
+                newX = x * self.tileSize
+                newY = y * self.tileSize
+                size = self.tileSize
+
+                if self.level[y][x] == 0:
+                    self.floorList.append(Floor(newX, newY, size, size, self))
+                elif self.level[y][x] == 1:
+                    self.wallList.append(Wall(newX, newY, size, size, self))
 
     def init_game(self):
         pygame.init()
@@ -38,11 +62,10 @@ class Game:
         self.wallList = []
         self.floorList = []
 
-
-
+        self.create_level()
         ############################
-        self.add_objects_to_game(5, Wall, self.wallList)
-        self.add_objects_to_game(5, Floor, self.floorList)
+        # self.add_objects_to_game(5, Wall, self.wallList)
+        # self.add_objects_to_game(5, Floor, self.floorList)
 
     def game_loop(self):
         while self.running:
@@ -74,9 +97,11 @@ class Game:
 
     def update(self):
         self.player.update()
-        self.offsetX = self.player.x - self.width/2
-        self.offsetY = self.player.y - self.height/2
-        self.solve_collisions()
+        # self.solve_collisions("HORIZONTAL")
+        # self.solve_collisions("VERTICAL")
+
+        self.offsetX = self.player.x - self.width / 2
+        self.offsetY = self.player.y - self.height / 2
 
     def draw(self):
         self.screen.fill(BLACK)
@@ -102,35 +127,40 @@ class Game:
 
             list_for_objects.append(new_wall)
 
-
-    def solve_collisions(self):
+    def solve_collisions(self, dir):
+        tolerance = 50
+        self.player.update_rect()
         for wall in self.wallList:
             if self.player.rect.colliderect(wall.rect):
-                if self.player.xVel > 0:
-                    if self.player.x + self.player.width/2 > wall.x - wall.width/2:
-                        self.player.x = wall.x - wall.width/2 - self.player.width/2
-                        self.player.xVel = 0
-                        self.player.update_rect()
+                if dir == "HORIZONTAL":
+                    if self.player.xVel > 0:
+                        if self.player.x + self.player.width / 2 > wall.x - wall.width / 2:
+                            self.player.x = wall.x - wall.width / 2 - self.player.width / 2
+                            self.player.xVel = 0
+                            self.player.update_rect()
+                            return
 
-                elif self.player.xVel < 0:
-                    if self.player.x - self.player.width/2 < wall.x + wall.width/2:
-                        self.player.x = wall.x + wall.width/2 + self.player.width/2
-                        self.player.xVel = 0
-                        self.player.update_rect()
+                    elif self.player.xVel < 0:
+                        if self.player.x - self.player.width / 2 < wall.x + wall.width / 2:
+                            self.player.x = wall.x + wall.width / 2 + self.player.width / 2
+                            self.player.xVel = 0
+                            self.player.update_rect()
+                            return
 
-                elif self.player.yVel > 0:
-                    if self.player.y + self.player.height / 2 > wall.y - wall.height / 2:
-                        self.player.y = wall.y - wall.height / 2 - self.player.height / 2
-                        self.player.yVel = 0
-                        self.player.update_rect()
+                elif dir == "VERTICAL":
+                    if self.player.yVel > 0:
+                        if self.player.y + self.player.height / 2 > wall.y - wall.height / 2:
+                            self.player.y = wall.y - wall.height / 2 - self.player.height / 2
+                            self.player.yVel = 0
+                            self.player.update_rect()
+                            return
 
-                elif self.player.yVel < 0:
-                    if self.player.y - self.player.height / 2 < wall.y + wall.height / 2:
-                        self.player.y = wall.y + wall.height / 2 + self.player.height / 2
-                        self.player.yVel = 0
-                        self.player.update_rect()
-
-
+                    elif self.player.yVel < 0:
+                        if self.player.y - self.player.height / 2 < wall.y + wall.height / 2:
+                            self.player.y = wall.y + wall.height / 2 + self.player.height / 2
+                            self.player.yVel = 0
+                            self.player.update_rect()
+                            return
 
 game = Game(1366, 768)
 game.main()

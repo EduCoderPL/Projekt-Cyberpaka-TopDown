@@ -21,9 +21,12 @@ class Player(GameObject):
         self.yVel *= 0.95
 
         self.x += self.xVel
-        self.y += self.yVel
+        self.game.solve_collisions("HORIZONTAL")
 
-        self.rect = Rect(self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+        self.y += self.yVel
+        self.game.solve_collisions("VERTICAL")
+
+        # self.rect = Rect(self.x - self.width/2, self.y - self.height/2, self.width, self.height)
 
     def update_rect(self):
         self.rect = Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
